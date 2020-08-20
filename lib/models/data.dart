@@ -33,11 +33,10 @@ class Data with ChangeNotifier {
     if (parking != null)
       parking.clear();
     parking = new List();
-    http.Response response = await http.get("https://data.angers.fr/api/records/1.0/search/?dataset=angers_stationnement&q=&rows=100&timezone=Europe%2FParis");
+    http.Response response = await http.get("$parkingUrl");
     List<dynamic> data = jsonDecode(response.body)['records'];
     data.forEach((element) {
       Map<String, dynamic> parkingData = element['fields'];
-      print(element['datasetid']);
       parking.add(Parking.fromJson(parkingData));
       if (locationData != null)
         calcDistance(locationData);

@@ -1,6 +1,7 @@
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class Parking {
+class Parking  {
   String _id;
   int _spaceCars;
   int _spaceBikes;
@@ -12,8 +13,26 @@ class Parking {
   String _name;
   String _address;
   String _infoUrl;
+  String _openTime = "";
+  String _closeTime = "";
 
   double distance = 0;
+  bool isFav;
+
+  void toggleFav() async {
+    this.isFav = !this.isFav;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool("${id}_favorite", this.isFav);
+  }
+
+  Future<bool> loadFavStorage() async {
+    this.isFav = false;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool result = prefs.getBool("${id}_favorite");
+    if (result != null && result)
+      this.isFav = true;
+    return true;
+  }
 
   Parking(
       this._id,
@@ -26,15 +45,17 @@ class Parking {
       this._location,
       this._name,
       this._address,
-      this._infoUrl);
+      this._infoUrl,
+      this._openTime,
+      this._closeTime);
 
   factory Parking.fromJson(Map<String, dynamic> json) {
     Map<String, double> prices = new Map();
-    prices['tarif_24h'] = json['tarif_24h'];
-    prices['tarif_1h'] = json['tarif_1h'];
-    prices['tarif_2h'] = json['tarif_2h'];
-    prices['tarif_3h'] = json['tarif_3h'];
-    prices['tarif_4h'] = json['tarif_4h'];
+    prices['tarif_1h'] = json['tarif_1h'] ?? -1;
+    prices['tarif_2h'] = json['tarif_2h'] ?? -1;
+    prices['tarif_3h'] = json['tarif_3h'] ?? -1;
+    prices['tarif_4h'] = json['tarif_4h'] ?? -1;
+    prices['tarif_24h'] = json['tarif_24h'] ?? -1;
     LatLng pos = LatLng(
       json['coordonnees_'][0],
       json['coordonnees_'][1],
@@ -42,6 +63,9 @@ class Parking {
     bool free = false;
     if (json['gratuit'] != "FAUX")
       free = true;
+
+    String open = json['horaires_ouverture'];
+    String close = json['horaires_fermeture'];
     return Parking(
       json['id_parking'],
       json['nb_places'],
@@ -53,7 +77,9 @@ class Parking {
       pos,
       json['nom'],
       json['adresse'],
-      json['url']
+      json['url'],
+      open ?? "00:00",
+      close ?? "00:00"
     );
   }
 
@@ -68,4 +94,7 @@ class Parking {
   int get spaceBikes => _spaceBikes;
   int get spaceCars => _spaceCars;
   String get id => _id;
+  String get closeTime => _closeTime;
+  String get openTime => _openTime;
+
 }

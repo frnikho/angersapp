@@ -1,6 +1,7 @@
 import 'package:angers/main.dart';
 import 'package:angers/models/data.dart';
 import 'package:angers/models/parking.dart';
+import 'package:angers/screen/parking_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:location/location.dart';
@@ -9,7 +10,7 @@ import 'package:provider/provider.dart';
 
 class ParkingListScreen extends StatefulWidget {
 
-  static String id = "ParkingScreen";
+  static String id = "ParkingListScreen";
 
   @override
   _ParkingListScreenState createState() => _ParkingListScreenState();
@@ -42,6 +43,7 @@ class _ParkingListScreenState extends State<ParkingListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    _getLocation();
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -57,7 +59,9 @@ class _ParkingListScreenState extends State<ParkingListScreen> {
                   bool success = await _getLocation();
                   if (!success)
                     return;
-                  Provider.of<Data>(context, listen: false).calcDistance(_locationData);
+                  setState(() {
+                    Provider.of<Data>(context, listen: false).calcDistance(_locationData);
+                  });
                 },
                 child: Icon(OMIcons.locationOn, color: Colors.black, size: 28),
               )
@@ -122,7 +126,9 @@ class ParkingTile extends StatelessWidget {
         Expanded(
           child: GestureDetector(
             onTap: () {
-              print(parking.id);
+              Navigator.push(context, MaterialPageRoute(
+                builder: (context) => ParkingScreen(parking),
+              ));
             },
             child: Container(
               decoration: BoxDecoration(
@@ -145,6 +151,18 @@ class ParkingTile extends StatelessWidget {
                                   image: NetworkImage("${parking.imageUrl}")
                               )
                           ),
+                          child: FutureBuilder(
+                            builder: (context, snap) {
+                              if (snap.hasData) {
+                                if (parking.isFav)
+                                  return Icon(Icons.star, color: Colors.yellow, size: 24);
+                                return SizedBox();
+                              } else {
+                                return SizedBox();
+                              }
+                            },
+                            future: parking.loadFavStorage(),
+                          ),
                         ),
                       ),
                     ),
@@ -159,7 +177,14 @@ class ParkingTile extends StatelessWidget {
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: <Widget>[
-                                  Text("${parking.name}", style: GoogleFonts.creteRound(fontSize: 18)),
+                                  Hero(
+                                    tag: "${parking.name}",
+                                    transitionOnUserGestures: true,
+                                    child: Material(
+                                      type: MaterialType.transparency,
+                                      child: Text("${parking.name}", style: GoogleFonts.creteRound(fontSize: 18))
+                                    )
+                                  ),
                                   SizedBox(height: 10),
                                   Text("${parking.address}", style: GoogleFonts.roboto(fontSize: 10))
                                 ],
