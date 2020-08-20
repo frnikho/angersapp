@@ -14,3 +14,5 @@ AngersGo est une application qui référence les parkings d'angers ainsi que leu
 [![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)](https://forthebadge.com)
 
 https://data.angers.fr/
+
+![Preview App](preview.gif)
