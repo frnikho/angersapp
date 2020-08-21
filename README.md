@@ -5,11 +5,11 @@
 AngersGo est une application qui référence les parkings d'angers ainsi que leurs caractéristiques.
 
 
-
 ## ToDo: 
-- ~~tarifs des parkings~~
-- ~~horaires des parkings~~
-- disponibilité des parkings (nombre de place disponible)
+- ~~tarifs des parkings
+- ~~horaires des parkings
+- ~~disponibilité des parkings (nombre de place disponible)~~
+- trier par ~~nom~~, ~~distance~~, favoris
 
 [![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)](https://forthebadge.com)
 
