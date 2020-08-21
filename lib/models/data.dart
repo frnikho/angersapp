@@ -27,7 +27,7 @@ class Data with ChangeNotifier {
       p.distance = km / 1000;
     }
   }
-
+  
   Future<bool> fetchAllParking(LocationData locationData) async {
     print("calling fetch :)");
     if (parking != null)

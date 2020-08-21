@@ -65,6 +65,10 @@ class _ParkingListScreenState extends State<ParkingListScreen> {
                 },
                 child: Icon(OMIcons.locationOn, color: Colors.black, size: 28),
               )
+          ),
+          Container(
+            padding: EdgeInsets.only(right: 12),
+            child: Icon(OMIcons.sort, color: Colors.black),
           )
         ],
       ),

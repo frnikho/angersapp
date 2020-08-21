@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
 class Parking  {
   String _id;
@@ -96,5 +99,10 @@ class Parking  {
   String get id => _id;
   String get closeTime => _closeTime;
   String get openTime => _openTime;
+
+  Future<int> getSpaceLeft() async {
+    http.Response response = await http.get("https://data.angers.fr/api/records/1.0/search/?dataset=parking-angers&q=$id&rows=-1&timezone=Europe%2FParis");
+    return jsonDecode(response.body)['records'][0]['fields']['disponible'] ?? 0;
+  }
 
 }
