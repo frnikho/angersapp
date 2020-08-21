@@ -2,6 +2,7 @@ import 'package:angers/main.dart';
 import 'package:angers/models/data.dart';
 import 'package:angers/models/parking.dart';
 import 'package:angers/screen/parking_screen.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:location/location.dart';
@@ -56,6 +57,7 @@ class _ParkingListScreenState extends State<ParkingListScreen> {
               padding: EdgeInsets.symmetric(horizontal: 10),
               child: GestureDetector(
                 onTap: () async {
+                  Provider.of<Data>(context, listen: false).sortByDistance();
                   bool success = await _getLocation();
                   if (!success)
                     return;
@@ -68,7 +70,12 @@ class _ParkingListScreenState extends State<ParkingListScreen> {
           ),
           Container(
             padding: EdgeInsets.only(right: 12),
-            child: Icon(OMIcons.sort, color: Colors.black),
+            child: InkWell(
+              child: Icon(OMIcons.sort, color: Colors.black),
+              onTap: () {
+                Provider.of<Data>(context, listen: false).sortByAlpha();
+              },
+            ),
           )
         ],
       ),
@@ -88,7 +95,7 @@ class _ParkingListScreenState extends State<ParkingListScreen> {
                       child: ParkingList(data.parking)
                   );
                 } else {
-                  return HomeScreen();
+                  return CircularProgressIndicator();
                 }
               }
             },

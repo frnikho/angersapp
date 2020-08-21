@@ -10,9 +10,12 @@ import 'package:location/location.dart';
 const String availableUrl = "https://data.angers.fr/api/records/1.0/search/?dataset=parking-angers&q=&rows=100&facet=nom";
 const String parkingUrl = "https://data.angers.fr/api/records/1.0/search/?dataset=angers_stationnement&q=&rows=100&timezone=Europe%2FParis";
 
+enum sortType {unknown, alpha, location}
+
 class Data with ChangeNotifier {
 
   List<Parking> parking;
+  sortType sort = sortType.unknown;
 
   void update() {
     notifyListeners();
@@ -41,7 +44,23 @@ class Data with ChangeNotifier {
       if (locationData != null)
         calcDistance(locationData);
     });
+    if (sort != sortType.unknown) {
+      if (sort == sortType.alpha)
+        parking.sort((a, b) => a.name.compareTo(b.name));
+      if (sort == sortType.location)
+        parking.sort((a, b) => a.distance.compareTo(b.distance));
+    }
     return (true);
+  }
+
+  void sortByAlpha() {
+    sort = sortType.alpha;
+    update();
+  }
+
+  void sortByDistance() {
+    sort = sortType.location;
+    update();
   }
 
 }
