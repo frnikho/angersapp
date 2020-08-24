@@ -88,7 +88,7 @@ class _ParkingListScreenState extends State<ParkingListScreen> {
             future: data.fetchAllParking(_locationData),
             builder: (context, snap) {
               if (!snap.hasData) {
-                return CircularProgressIndicator();
+                return Center(child: CircularProgressIndicator());
               } else {
                 if (snap.data) {
                   return RefreshIndicator(
@@ -98,7 +98,7 @@ class _ParkingListScreenState extends State<ParkingListScreen> {
                       child: ParkingList(data.parking)
                   );
                 } else {
-                  return CircularProgressIndicator();
+                  return Center(child: CircularProgressIndicator());
                 }
               }
             },
