@@ -20,7 +20,7 @@ class Parking  {
   String _closeTime = "";
 
   double distance = 0;
-  bool isFav;
+  bool isFav = false;
 
   void toggleFav() async {
     this.isFav = !this.isFav;

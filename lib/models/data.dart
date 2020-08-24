@@ -10,7 +10,7 @@ import 'package:location/location.dart';
 const String availableUrl = "https://data.angers.fr/api/records/1.0/search/?dataset=parking-angers&q=&rows=100&facet=nom";
 const String parkingUrl = "https://data.angers.fr/api/records/1.0/search/?dataset=angers_stationnement&q=&rows=100&timezone=Europe%2FParis";
 
-enum sortType {unknown, alpha, location}
+enum sortType {unknown, alpha, location, size, price_1h, price_24h}
 
 class Data with ChangeNotifier {
 
@@ -32,7 +32,6 @@ class Data with ChangeNotifier {
   }
   
   Future<bool> fetchAllParking(LocationData locationData) async {
-    print("calling fetch :)");
     if (parking != null)
       parking.clear();
     parking = new List();
@@ -49,6 +48,12 @@ class Data with ChangeNotifier {
         parking.sort((a, b) => a.name.compareTo(b.name));
       if (sort == sortType.location)
         parking.sort((a, b) => a.distance.compareTo(b.distance));
+      if (sort == sortType.size)
+        parking.sort((a, b) => b.spaceCars.compareTo(a.spaceCars));
+      if (sort == sortType.price_24h)
+        parking.sort((a, b) => a.prices['tarif_24h'].compareTo(b.prices['tarif_24h']));
+      if (sort == sortType.price_24h)
+        parking.sort((a, b) => a.prices['tarif_1h'].compareTo(b.prices['tarif_1h']));
     }
     return (true);
   }
@@ -60,6 +65,21 @@ class Data with ChangeNotifier {
 
   void sortByDistance() {
     sort = sortType.location;
+    update();
+  }
+
+  void sortBySize() {
+    sort = sortType.size;
+    update();
+  }
+
+  void sortByPrice24h() {
+    sort = sortType.price_24h;
+    update();
+  }
+
+  void sortByPrice1h() {
+    sort = sortType.price_1h;
     update();
   }
 

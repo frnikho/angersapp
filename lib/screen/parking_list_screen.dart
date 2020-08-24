@@ -1,6 +1,7 @@
 import 'package:angers/main.dart';
 import 'package:angers/models/data.dart';
 import 'package:angers/models/parking.dart';
+import 'package:angers/screen/parking_map.dart';
 import 'package:angers/screen/parking_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -49,31 +50,33 @@ class _ParkingListScreenState extends State<ParkingListScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: Icon(OMIcons.arrowBackIos, color: Colors.black),
         title: Text("Parkings", style: GoogleFonts.roboto(color: Colors.black, fontWeight: FontWeight.w500)),
         centerTitle: true,
         actions: <Widget>[
           Container(
-              padding: EdgeInsets.symmetric(horizontal: 10),
-              child: GestureDetector(
-                onTap: () async {
-                  Provider.of<Data>(context, listen: false).sortByDistance();
-                  bool success = await _getLocation();
-                  if (!success)
-                    return;
-                  setState(() {
-                    Provider.of<Data>(context, listen: false).calcDistance(_locationData);
-                  });
-                },
-                child: Icon(OMIcons.locationOn, color: Colors.black, size: 28),
-              )
+            padding: EdgeInsets.only(right: 12),
+            child: InkWell(
+              child: Icon(OMIcons.map, color: Colors.black),
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(
+                  builder: (context) {
+                    return ParkingMap(parkings: Provider.of<Data>(context).parking);
+                  }
+                ));
+              },
+            ),
           ),
           Container(
             padding: EdgeInsets.only(right: 12),
             child: InkWell(
               child: Icon(OMIcons.sort, color: Colors.black),
               onTap: () {
-                Provider.of<Data>(context, listen: false).sortByAlpha();
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return _buildDialog(context);
+                  }
+                );
               },
             ),
           )
@@ -218,3 +221,88 @@ class ParkingTile extends StatelessWidget {
   }
 }
 
+class DialogText extends StatelessWidget {
+
+  final IconData icon;
+  final String text;
+  final Function callback;
+
+  DialogText({this.icon, this.text, this.callback});
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        this.callback();
+      },
+      borderRadius: BorderRadius.all(Radius.circular(3)),
+      child: Container(
+        margin: EdgeInsets.all(10),
+        child: Row(
+          children: [
+            Icon(this.icon ?? Icons.close, size: 28),
+            SizedBox(width: 10),
+            Text(this.text ?? "not defined", style: GoogleFonts.openSans(fontSize: 18)),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
+Widget _buildDialog(BuildContext context) {
+  return Dialog(
+      elevation: 0,
+      child: Container(
+        height: 400,
+          padding: EdgeInsets.symmetric(vertical: 40, horizontal: 20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              DialogText(
+                callback: () {
+                  Provider.of<Data>(context, listen: false).sortByAlpha();
+                  Navigator.pop(context);
+                },
+                icon: OMIcons.sortByAlpha,
+                text: "Alpha",
+              ),
+              DialogText(
+                callback: ()  {
+                  Provider.of<Data>(context, listen: false).sortByDistance();
+                  Navigator.pop(context);
+                },
+                icon: OMIcons.locationOn,
+                text: "Distance",
+              ),
+              DialogText(
+                callback: ()  {
+                  Provider.of<Data>(context, listen: false).sortBySize();
+                  Navigator.pop(context);
+                },
+                icon: OMIcons.confirmationNumber,
+                text: "Taille",
+              ),
+              DialogText(
+                callback: ()  {
+                  Provider.of<Data>(context, listen: false).sortByPrice1h();
+                  Navigator.pop(context);
+                },
+                icon: OMIcons.attachMoney,
+                text: "Prix 1h",
+              ),
+              DialogText(
+                callback: ()  {
+                  Provider.of<Data>(context, listen: false).sortByPrice24h();
+                  Navigator.pop(context);
+                },
+                icon: OMIcons.attachMoney,
+                text: "Prix 24h",
+              ),
+            ],
+          )
+      )
+  );
+}

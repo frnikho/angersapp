@@ -172,27 +172,26 @@ class _ParkingScreenState extends State<ParkingScreen> {
                             Icon(OMIcons.directionsBike, color: Colors.white),
                           ],
                         ),
-                        Column(
-                          children: [
-                            Row(
-                              children: [
-                                FutureBuilder<int>(
-                                  builder: (context, snap) {
-                                    if (snap.hasData) {
-                                      return Text("${snap.data}", style: spacesStyle);
-                                    } else {
-                                      return Text("?", style: spacesStyle);
-                                    }
-                                  },
-                                  future: widget.parking.getSpaceLeft(),
-                                ),
-                                //Icon(OMIcons.directionsCar),
-                                Text("/", style: spacesStyle),
-                                Text("${widget.parking.spaceCars ?? 0}", style: spacesStyle),
-                              ],
-                            ),
-                            Icon(OMIcons.directionsCar, color: Colors.white),
-                          ],
+                        FutureBuilder(
+                          future: widget.parking.getSpaceLeft(),
+                          builder: (context, snap) {
+                            if (snap.hasData) {
+                              return Column(
+                                children: [
+                                  Row(
+                                    children: [
+                                      Text("${widget.parking.spaceCars-snap.data}", style: spacesStyle),
+                                      Text("/${widget.parking.spaceCars ?? 0}", style: spacesStyle),
+                                    ],
+                                  ),
+                                  Text("${snap.data} place restantes", style: spacesStyle.copyWith(color: Colors.white, fontSize: 12),),
+                                  Icon(OMIcons.directionsCar, color: Colors.white),
+                                ],
+                              );
+                            } else {
+                              return Text("?", style: spacesStyle);
+                            }
+                          },
                         ),
                         Column(
                           children: [
@@ -214,7 +213,6 @@ class _ParkingScreenState extends State<ParkingScreen> {
                           child: GoogleMap(
                             onTap: (LatLng pos) {
                               _openMap();
-                              print("map");
                             },
                             zoomControlsEnabled: false,
                             mapToolbarEnabled: false,
